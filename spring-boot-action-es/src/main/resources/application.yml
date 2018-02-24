@@ -1,0 +1,9 @@
+spring:
+      data:
+           elsticsearch:
+                       cluster-name: elasticserch
+                       cluster-nodes:
+                       properties:
+                                 ptah:
+                                 los: /data/elasticsearch/log
+                                 data: /data/elasticseach/node/master

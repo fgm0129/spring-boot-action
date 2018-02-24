@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+				"
+       default-lazy-init="false">
+    <bean id="zkClient" class="com.spring.boot.action.zksupport.ZookeeperFactory" destroy-method="close">
+        <property name="zkHosts" value="127.0.0.1:2181"/>
+        <property name="namespace" value="spring.boot"/>
+        <property name="connectionTimeout" value="3000"/>
+        <property name="sessionTimeout" value="3000"/>
+        <property name="singleton" value="true"/>
+    </bean>
+    <bean id="register" class="com.spring.boot.action.zksupport.zookeeper.ThriftAddressRegisterZookeeper" destroy-method="close">
+        <property name="zkClient" ref="zkClient"/>
+    </bean>
+    <bean id="helloWorldService" class="com.spring.boot.action.zkserver.HelloWorldServiceImpl"></bean>
+
+    <bean  class="com.spring.boot.action.zksupport.ThriftServerFactory" destroy-method="close">
+        <property name="service" ref="helloWorldService"/>
+        <property name="port" value="9000"/>
+        <property name="version" value="1.0.0"/>
+        <property name="weight" value="1"/>
+        <property name="thriftAddressRegister" ref="register"/>
+    </bean>
+    <bean class="com.spring.boot.action.zksupport.ThriftServerFactory" destroy-method="close">
+        <property name="service" ref="helloWorldService"/>
+        <property name="port" value="9001"/>
+        <property name="version" value="1.0.0"/>
+        <property name="weight" value="1"/>
+        <property name="thriftAddressRegister" ref="register"/>
+    </bean>
+
+
+
+
+</beans>

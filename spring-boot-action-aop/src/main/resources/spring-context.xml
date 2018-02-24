@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-autowire="byName"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+       xmlns:aop="http://www.springframework.org/schema/aop">
+
+
+    <bean id="carServiceTarget" class="com.spring.boot.action.aop.proxy.CarServiceImpl"/>
+
+    <bean id="carServiceBeforeAdvice" class="com.spring.boot.action.aop.proxy.advice.CarServiceBeforeAdvice"/>
+
+    <bean id="carServiceAfterAdvice" class="com.spring.boot.action.aop.proxy.advice.CarServiceAfterAdvice"/>
+
+    <bean id="carServiceAroundAdvice" class="com.spring.boot.action.aop.proxy.advice.CarServiceAroundAdvice"/>
+
+    <bean id="carServiceThrowsAdvice" class="com.spring.boot.action.aop.proxy.advice.CarServiceThrowsAdvice"/>
+
+    <bean id="carService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <!--<property name="proxyInterfaces" value="com.spring.boot.action.aop.proxy.CarService"/>-->
+        <property name="target" ref="carServiceTarget"/>
+        <property name="interceptorNames">
+            <list>
+                <value>carServiceBeforeAdvice</value>
+                <value>carServiceAfterAdvice</value>
+                <value>carServiceAroundAdvice</value>
+                <value>carServiceThrowsAdvice</value>
+            </list>
+        </property>
+    </bean>
+
+
+
+    <!--开启AOP自动加载-->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+
+    <!--原始对象-->
+    <bean id="student" class="com.spring.boot.action.aop.proxy.hotswap.Student">
+        <constructor-arg index="0" value="fgm"/>
+        <constructor-arg index="1" value="18"/>
+        <constructor-arg index="2" value="男"/>
+     </bean>
+
+    <!--替换工具-->
+    <bean id="swapper" class="org.springframework.aop.target.HotSwappableTargetSource">
+        <constructor-arg ref="student"/>
+    </bean>
+
+    <!--业务使用对象，可被热替换的对象-->
+    <bean id="targetStudent" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="targetSource" ref="swapper"/>
+    </bean>
+
+
+</beans>
